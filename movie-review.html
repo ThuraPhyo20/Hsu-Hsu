@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Reviews</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html">Hus MOVIE</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home Page</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="movie-review.html">Review</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="movie-detail.html">Movie Detail</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Search Result</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <header class="bg-dark text-white text-center py-3">
+        <h1>Movie Reviews</h1>
+    </header>
+
+    <main class="container my-5">
+        <div class="row">
+            <div class="col-md-8">
+                <h2 id="movie-title">Movie Title</h2>
+                <div id="reviews">
+                    <h3>Reviews</h3>
+                    <ul class="list-group" id="review-list">
+                        <!-- Reviews will be dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h3>Add a Review</h3>
+                <form id="review-form">
+                    <div class="form-group">
+                        <label for="reviewer-name">Name</label>
+                        <input type="text" class="form-control" id="reviewer-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-text">Review</label>
+                        <textarea class="form-control" id="review-text" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-rating">Rating</label>
+                        <select class="form-control" id="review-rating" required>
+                            <option value="1">1 - Poor</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="3">3 - Good</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2024 Movie Webpage. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const movieTitle = params.get('title');
+            document.getElementById('movie-title').textContent = movieTitle;
+
+            const reviews = JSON.parse(localStorage.getItem(`reviews-${movieTitle}`)) || [];
+            const reviewList = document.getElementById('review-list');
+
+            function displayReviews() {
+                reviewList.innerHTML = '';
+                reviews.forEach(review => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `
+                        <h5>${review.name} <span class="text-warning">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span></h5>
+                        <p>${review.text}</p>
+                    `;
+                    reviewList.appendChild(listItem);
+                });
+            }
+
+            displayReviews();
+
+            document.getElementById('review-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('reviewer-name').value;
+                const text = document.getElementById('review-text').value;
+                const rating = parseInt(document.getElementById('review-rating').value);
+                reviews.push({ name, text, rating });
+                localStorage.setItem(`reviews-${movieTitle}`, JSON.stringify(reviews));
+                displayReviews();
+                e.target.reset();
+            });
+        });
+    </script>
+</body>
+</html>
